@@ -1,53 +1,82 @@
-# Academic Project Page Template
-This is an academic paper project page template.
+# StainExpert
+<div align="center">
+**StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation**<br/>
 
+[Zeyu Liu](https://github.com/Rowerliu) et al.<br/>
+[GitHub](https://github.com/Rowerliu/StainExpert#)
 
-Example project pages built using this template are:
-- https://horwitz.ai/probex
-- https://vision.huji.ac.il/probegen
-- https://horwitz.ai/mother
-- https://horwitz.ai/spectral_detuning
-- https://vision.huji.ac.il/ladeda
-- https://vision.huji.ac.il/dsire
-- https://horwitz.ai/podd
-- https://dreamix-video-editing.github.io
-- https://horwitz.ai/conffusion
-- https://horwitz.ai/3d_ads/
-- https://vision.huji.ac.il/ssrl_ad
-- https://vision.huji.ac.il/deepsim
+<img src="asset/StainExpert.png" height="300" />
+</div>
 
+## 🗃️ Overview
+Pathological examination is critical for disease diagnosis, with various staining techniques providing detailed visualization 
+of tissue structures. While hematoxylin and eosin (H&E) staining remains predominant, the special stains, immunohistochemistry (IHC) 
+and multiplex immunofluorescence (mpIF) provide valuable complementary information for comprehensive diagnosis. However, 
+current multi-stain workflows are time-consuming, labor-intensive, and tissue-exhaustive, requiring either re-staining or 
+additional tissue sectioning. To address these challenges, we propose StainExpert, a unified multimodal diffusion framework 
+for source-to-multi-target pathological stain translation. Unlike existing approaches that require separate models for 
+each staining pair, StainExpert establishes the first multi-expert system where specialized networks collaboratively 
+learn staining principles while maintaining domain-specific expertise. Through multi-expert and multi-objective optimization, 
+it enables efficient translation from a single source to multiple targets. Additionally, our multimodal diffusion architecture 
+integrates textual guidance with visual features, achieving superior accuracy and pathology-informed translation. 
+Leveraging parameter-efficient design and model distillation, StainExpert matches GAN-level efficiency while delivering 
+superior generation quality. We validate StainExpert across three datasets spanning H&E, special stains, IHC, and mpIF 
+modalities. Extensive evaluation demonstrates that StainExpert generates high-quality virtual stains that preserve 
+critical pathological features for accurate diagnosis. Beyond robust cross-domain generalization, StainExpert offers 
+a transformative platform for efficient multi-target stain translation, advancing toward streamlined, tissue-conserving, 
+and resource-efficient diagnostic workflows in computational pathology.
 
+## 🗃️ Usage
 
-## Start using the template
-To start using the template click on `Use this Template`.
+### Preparation
+1. Prepare the data (e.g. ANHIR-kidney)
+    <details>
+    <summary> assume the multi-stain dataset is in `/path/to/anhir`. It should be like this:</summary>
 
-The template uses html for controlling the content and css for controlling the style. 
-To edit the websites contents edit the `index.html` file. It contains different HTML "building blocks", use whichever ones you need and comment out the rest.  
+    ```
+    /path/to/anhir/:
+        train/:
+            HE/: 
+                HE_images_1.JPEG ...
+                HE_images_2.JPEG ...
+            MAS/:
+                MAS_images_2.JPEG ...
+                MAS_images_2.JPEG ...
+            ... 
 
-**IMPORTANT!** Make sure to replace the `favicon.ico` under `static/images/` with one of your own, otherwise your favicon is going to be a dreambooth image of me.
+        test/:
+            HE/: 
+                HE_images_1.JPEG ...
+            MAS/: 
+                MAS_images_1.JPEG ...
+            ...
+       ```
+   **NOTE: The arg `--data_path=/path/to/dataset` should be passed to the training script.**
+    </details>
 
-## Components
-- Teaser video
-- Images Carousel
-- Youtube embedding
-- Video Carousel
-- PDF Poster
-- Bibtex citation
+2. Train the StainExpert model<br/>
+```bash
+python train.py --experts=4
+```
 
-## Tips:
-- The `index.html` file contains comments instructing you what to replace, you should follow these comments.
-- The `meta` tags in the `index.html` file are used to provide metadata about your paper 
-(e.g. helping search engine index the website, showing a preview image when sharing the website, etc.)
-- The resolution of images and videos can usually be around 1920-2048, there rarely a need for better resolution that take longer to load. 
-- All the images and videos you use should be compressed to allow for fast loading of the website (and thus better indexing by search engines). For images, you can use [TinyPNG](https://tinypng.com), for videos you can need to find the tradeoff between size and quality.
-- When using large video files (larger than 10MB), it's better to use youtube for hosting the video as serving the video from the website can take time.
-- Using a tracker can help you analyze the traffic and see where users came from. [statcounter](https://statcounter.com) is a free, easy to use tracker that takes under 5 minutes to set up. 
-- This project page can also be made into a github pages website.
-- Replace the favicon to one of your choosing (the default one is of the Hebrew University). 
-- Suggestions, improvements and comments are welcome, simply open an issue or contact me. You can find my contact information at [https://horwitz.ai](https://horwitz.ai)
+## 🗃️ Acknowledgements
+This implementation is based on / inspired by:<br/>
+[img2img-turbo](https://github.com/GaParmar/img2img-turbo)<br/>
+[Adversarial Diffusion Distillation](https://github.com/Stability-AI/generative-models)<br/>
 
-## Acknowledgments
-Parts of this project page were adopted from the [Nerfies](https://nerfies.github.io/) page.
+## 🗃️ Enviroments
+1. Install `torch>=2.1.0`.
+2. Install other packages following `requirements.txt`.
 
-## Website License
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+## 🗃️ Materials
+The comparison methods are listed here:
+
+|  Model  | Paper                                                                                                                            |                                     Code                                      |
+|:-------:|:---------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------:|
+| StarGAN | [StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation](https://arxiv.org/abs/1711.09020) |                  [Github](https://github.com/yunjey/stargan)                  |
+|  DMIT   | [Multi-mapping Image-to-Image Translation via Learning Disentanglement](https://arxiv.org/abs/1909.07877)                        |                 [Github](https://github.com/Xiaoming-Yu/DMIT)                 |
+|  Tunit  | [Rethinking the Truly Unsupervised Image-to-Image Translation](https://arxiv.org/abs/2006.06500)                                 |                  [Github](https://github.com/clovaai/tunit)                   |
+|  UMDST  | [Unpaired multi-domain stain transfer for kidney histopathological images](https://arxiv.org/html/2412.11106)                                |                [Github](https://github.com/linyiyang98/UMDST)                 |
+| MTMGAN  | [Unsupervised many-to-many stain translation for histological image augmentation to improve classification accuracy](https://www.sciencedirect.com/science/article/pii/S2153353923000093)                   |                                                                               |
+| MulHiST | [Multiple Histological Staining for Thick Biological Samples via Unsupervised Image-to-Image Translation](https://link.springer.com/chapter/10.1007/978-3-031-43987-2_71)             |                [Github](https://github.com/TABLAB-HKUST/MulHiST)              |
+| GramGAN | [Unsupervised Multi-Domain Progressive Stain Transfer Guided by Style Encoding Dictionary](https://ieeexplore.ieee.org/document/10388060)                                                                                                                                 |                                  [Github](https://github.com/xianchaoguan/GramGAN)                                   |
