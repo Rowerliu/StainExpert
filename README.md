@@ -56,7 +56,7 @@ and resource-efficient diagnostic workflows in computational pathology.
 
 2. Train the StainExpert model<br/>
 ```bash
-python train.py --experts=4
+python train.py --data '/path/to/anhir' --experts 4 --topk 2 --step 100000
 ```
 
 ## 🗃️ Enviroments
