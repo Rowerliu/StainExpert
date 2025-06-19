@@ -59,11 +59,6 @@ and resource-efficient diagnostic workflows in computational pathology.
 python train.py --experts=4
 ```
 
-## 🗃️ Acknowledgements
-This implementation is based on / inspired by:<br/>
-[img2img-turbo](https://github.com/GaParmar/img2img-turbo)<br/>
-[Adversarial Diffusion Distillation](https://github.com/Stability-AI/generative-models)<br/>
-
 ## 🗃️ Enviroments
 1. Install `torch>=2.1.0`.
 2. Install other packages following `requirements.txt`.
@@ -80,3 +75,11 @@ The comparison methods are listed here:
 | MTMGAN  | [Unsupervised many-to-many stain translation for histological image augmentation to improve classification accuracy](https://www.sciencedirect.com/science/article/pii/S2153353923000093)                   |                                                                               |
 | MulHiST | [Multiple Histological Staining for Thick Biological Samples via Unsupervised Image-to-Image Translation](https://link.springer.com/chapter/10.1007/978-3-031-43987-2_71)             |                [Github](https://github.com/TABLAB-HKUST/MulHiST)              |
 | GramGAN | [Unsupervised Multi-Domain Progressive Stain Transfer Guided by Style Encoding Dictionary](https://ieeexplore.ieee.org/document/10388060)                                                                                                                                 |                                  [Github](https://github.com/xianchaoguan/GramGAN)                                   |
+
+## 🗃️ Acknowledgements
+This implementation is based on / inspired by:<br/>
+[img2img-turbo](https://github.com/GaParmar/img2img-turbo)<br/>
+[Adversarial Diffusion Distillation](https://github.com/Stability-AI/generative-models)<br/>
+
+## 🗃️ Reference
+<Liu et al. StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation (2025)>
