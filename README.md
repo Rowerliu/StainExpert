@@ -31,10 +31,10 @@ and resource-efficient diagnostic workflows in computational pathology.
 ### Preparation
 1. Prepare the data (e.g. ANHIR-kidney)
     <details>
-    <summary> assume the multi-stain dataset is in `/path/to/anhir`. It should be like this:</summary>
+    <summary> assume the multi-stain dataset is in `/path/to/anhir-kidney`. It should be like this:</summary>
 
     ```
-    /path/to/anhir/:
+    /path/to/anhir-kidney/:
         train/:
             HE/: 
                 HE_images_1.JPEG ...
@@ -56,7 +56,7 @@ and resource-efficient diagnostic workflows in computational pathology.
 
 2. Train the StainExpert model<br/>
 ```bash
-python train.py --data '/path/to/anhir' --experts 4 --topk 2 --step 100000
+python train.py --data /path/to/anhir-kidney --experts 4 --topk 2 --step 100000
 ```
 
 ## 🗃️ Enviroments
