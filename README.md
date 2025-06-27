@@ -66,15 +66,15 @@ python train.py --data '/path/to/anhir' --experts 4 --topk 2 --step 100000
 ## 🗃️ Materials
 The comparison methods are listed here:
 
-|  Model  | Paper                                                                                                                            |                                     Code                                      |
-|:-------:|:---------------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------:|
-| StarGAN | [StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation](https://arxiv.org/abs/1711.09020) |                  [Github](https://github.com/yunjey/stargan)                  |
-|  DMIT   | [Multi-mapping Image-to-Image Translation via Learning Disentanglement](https://arxiv.org/abs/1909.07877)                        |                 [Github](https://github.com/Xiaoming-Yu/DMIT)                 |
-|  Tunit  | [Rethinking the Truly Unsupervised Image-to-Image Translation](https://arxiv.org/abs/2006.06500)                                 |                  [Github](https://github.com/clovaai/tunit)                   |
-|  UMDST  | [Unpaired multi-domain stain transfer for kidney histopathological images](https://arxiv.org/html/2412.11106)                                |                [Github](https://github.com/linyiyang98/UMDST)                 |
-| MTMGAN  | [Unsupervised many-to-many stain translation for histological image augmentation to improve classification accuracy](https://www.sciencedirect.com/science/article/pii/S2153353923000093)                   |                                                                               |
-| MulHiST | [Multiple Histological Staining for Thick Biological Samples via Unsupervised Image-to-Image Translation](https://link.springer.com/chapter/10.1007/978-3-031-43987-2_71)             |                [Github](https://github.com/TABLAB-HKUST/MulHiST)              |
-| GramGAN | [Unsupervised Multi-Domain Progressive Stain Transfer Guided by Style Encoding Dictionary](https://ieeexplore.ieee.org/document/10388060)                                                                                                                                 |                                  [Github](https://github.com/xianchaoguan/GramGAN)                                   |
+|  Model  | Paper                                                                                                                            |                       Code                        |
+|:-------:|:---------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------:|
+| StarGAN | [StarGAN: Unified Generative Adversarial Networks for Multi-Domain Image-to-Image Translation](https://arxiv.org/abs/1711.09020) |    [Github](https://github.com/yunjey/stargan)    |
+|  DMIT   | [Multi-mapping Image-to-Image Translation via Learning Disentanglement](https://arxiv.org/abs/1909.07877)                        |   [Github](https://github.com/Xiaoming-Yu/DMIT)   |
+|  Tunit  | [Rethinking the Truly Unsupervised Image-to-Image Translation](https://arxiv.org/abs/2006.06500)                                 |    [Github](https://github.com/clovaai/tunit)     |
+|  UMDST  | [Unpaired multi-domain stain transfer for kidney histopathological images](https://arxiv.org/html/2412.11106)                                |  [Github](https://github.com/linyiyang98/UMDST)   |
+| MTMGAN  | [Unsupervised many-to-many stain translation for histological image augmentation to improve classification accuracy](https://www.sciencedirect.com/science/article/pii/S2153353923000093)                   |       [Reproduce]         |
+| MulHiST | [Multiple Histological Staining for Thick Biological Samples via Unsupervised Image-to-Image Translation](https://link.springer.com/chapter/10.1007/978-3-031-43987-2_71)             | [Github](https://github.com/TABLAB-HKUST/MulHiST) |
+| GramGAN | [Unsupervised Multi-Domain Progressive Stain Transfer Guided by Style Encoding Dictionary](https://ieeexplore.ieee.org/document/10388060)                                                                                                                                 | [Github](https://github.com/xianchaoguan/GramGAN) |
 
 ## 🗃️ Acknowledgements
 This implementation is based on / inspired by:<br/>
