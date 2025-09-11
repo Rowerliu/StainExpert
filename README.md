@@ -8,7 +8,8 @@
 <img src="asset/StainExpert.png" height="300" />
 </div>
 
-## 🗃️ Overview
+
+## 📇 Overview
 Pathological examination is critical for disease diagnosis, with various staining techniques providing detailed visualization 
 of tissue structures. While hematoxylin and eosin (H&E) staining remains predominant, the special stains, immunohistochemistry (IHC) 
 and multiplex immunofluorescence (mpIF) provide valuable complementary information for comprehensive diagnosis. However, 
@@ -26,15 +27,19 @@ critical pathological features for accurate diagnosis. Beyond robust cross-domai
 a transformative platform for efficient multi-target stain translation, advancing toward streamlined, tissue-conserving, 
 and resource-efficient diagnostic workflows in computational pathology.
 
-## 🗃️ Usage
 
-### Preparation
-1. Prepare the data (e.g. ANHIR-kidney)
+## 🗄️ Enviroments
+1. Install `torch>=2.1.0`.
+2. Install other packages following `requirements.txt`.
+
+
+## 🗃️ Usage
+### 1. Prepare the data (e.g. ANHIR-kidney)
     <details>
     <summary> assume the multi-stain dataset is in `/path/to/anhir-kidney`. It should be like this:</summary>
 
     ```
-    /path/to/anhir-kidney/:
+    path/to/anhir-kidney/:
         train/:
             HE/: 
                 HE_images_1.JPEG ...
@@ -54,14 +59,11 @@ and resource-efficient diagnostic workflows in computational pathology.
    **NOTE: The arg `--data_path=/path/to/dataset` should be passed to the training script.**
     </details>
 
-2. Train the StainExpert model<br/>
+### 2. Train the StainExpert model<br/>
 ```bash
 python train.py --data /path/to/anhir-kidney --experts 4 --topk 2 --step 100000
 ```
 
-## 🗃️ Enviroments
-1. Install `torch>=2.1.0`.
-2. Install other packages following `requirements.txt`.
 
 ## 🗃️ Materials
 The comparison methods are listed here:
@@ -76,10 +78,12 @@ The comparison methods are listed here:
 | MulHiST | [Multiple Histological Staining for Thick Biological Samples via Unsupervised Image-to-Image Translation](https://link.springer.com/chapter/10.1007/978-3-031-43987-2_71)             | [Github](https://github.com/TABLAB-HKUST/MulHiST) |
 | GramGAN | [Unsupervised Multi-Domain Progressive Stain Transfer Guided by Style Encoding Dictionary](https://ieeexplore.ieee.org/document/10388060)                                                                                                                                 | [Github](https://github.com/xianchaoguan/GramGAN) |
 
-## 🗃️ Acknowledgements
+
+## 📍 Acknowledgements
 This implementation is based on / inspired by:<br/>
 [img2img-turbo](https://github.com/GaParmar/img2img-turbo)<br/>
 [Adversarial Diffusion Distillation](https://github.com/Stability-AI/generative-models)<br/>
+
 
 ## 🗃️ Reference
 <Liu et al. StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation (2025)>
