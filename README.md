@@ -65,7 +65,7 @@ python train.py --data /path/to/anhir-kidney --experts 4 --topk 2 --step 100000
 ```
 
 
-## 🗃️ Materials
+## 🗂️ Materials
 The comparison methods are listed here:
 
 |  Model  | Paper                                                                                                                            |                       Code                        |
