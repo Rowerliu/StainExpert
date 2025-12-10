@@ -11,8 +11,8 @@ from accelerate.utils import set_seed
 from torchvision import transforms
 from transformers import AutoTokenizer, CLIPTextModel
 from utils.model import make_1step_sched
-from utils.cyclegan_turbo_moe_19 import CycleGAN_Turbo, VAE_encode, VAE_decode, initialize_unet, initialize_vae
-from utils.training_utils_lzy_DeepLIIF import UnpairedDataset, parse_args_unpaired_training
+from utils.cyclegan_turbo_moe import CycleGAN_Turbo, VAE_encode, VAE_decode, initialize_unet, initialize_vae
+from utils.training_utils_ANHIR import UnpairedDataset, parse_args_training
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -165,5 +165,5 @@ def main(args):
 
 if __name__ == "__main__":
     with torch.cuda.device(0):
-        args = parse_args_unpaired_training()
+        args = parse_args_training()
         main(args)

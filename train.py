@@ -21,7 +21,7 @@ from diffusers.optimization import get_scheduler
 import vision_aided_loss
 from utils.model import make_1step_sched, make_4step_sched
 from utils.cyclegan_turbo_moe import CycleGAN_Turbo, VAE_encode, VAE_decode, initialize_unet, initialize_vae
-from utils.training_utils import UnpairedDataset, build_transform, parse_args_unpaired_training
+from utils.training_utils import UnpairedDataset, build_transform, parse_args_training
 from utils import logger
 
 import ssl
@@ -116,18 +116,6 @@ def main(args):
     time_start = datetime.datetime.now().strftime('%Y-%m-%d %H-%M-%S')
     logger.configure(dir=log_dir, log_suffix=time_start)
     logger.info("Args: {}", args)
-
-    # # save code
-    # pyfiles = glob("*/*.py", recursive=True) + glob("*.py", recursive=True)
-    # code_save_dir = os.path.join(log_dir, 'code')
-    # os.makedirs(code_save_dir, exist_ok=True)
-    # filename = os.path.basename(__file__)
-    # code_save_list = [os.path.basename(__file__),
-    #                   parse_args_unpaired_training.__module__.split('.')[-1] + '.py',
-    #                   CycleGAN_Turbo.__module__.split('.')[-1] + '.py']
-    # for py in pyfiles:
-    #     if py in code_save_list:
-    #         copyfile(py, os.path.join(log_dir, 'code') + "/" + py)
 
     accelerator = Accelerator(gradient_accumulation_steps=args.gradient_accumulation_steps, log_with=args.report_to)
     set_seed(args.seed)
@@ -682,5 +670,5 @@ def main(args):
 
 if __name__ == "__main__":
     with torch.cuda.device(0):
-        args = parse_args_unpaired_training()
+        args = parse_args_training()
         main(args)
