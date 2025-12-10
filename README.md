@@ -10,22 +10,17 @@
 
 
 ## 📇 Overview
-Pathological examination is critical for disease diagnosis, with various staining techniques providing detailed visualization 
-of tissue structures. While hematoxylin and eosin (H&E) staining remains predominant, the special stains, immunohistochemistry (IHC) 
-and multiplex immunofluorescence (mpIF) provide valuable complementary information for comprehensive diagnosis. However, 
-current multi-stain workflows are time-consuming, labor-intensive, and tissue-exhaustive, requiring either re-staining or 
-additional tissue sectioning. To address these challenges, we propose StainExpert, a unified multimodal diffusion framework 
-for source-to-multi-target pathological stain translation. Unlike existing approaches that require separate models for 
-each staining pair, StainExpert establishes the first multi-expert system where specialized networks collaboratively 
-learn staining principles while maintaining domain-specific expertise. Through multi-expert and multi-objective optimization, 
-it enables efficient translation from a single source to multiple targets. Additionally, our multimodal diffusion architecture 
-integrates textual guidance with visual features, achieving superior accuracy and pathology-informed translation. 
-Leveraging parameter-efficient design and model distillation, StainExpert matches GAN-level efficiency while delivering 
-superior generation quality. We validate StainExpert across three datasets spanning H&E, special stains, IHC, and mpIF 
-modalities. Extensive evaluation demonstrates that StainExpert generates high-quality virtual stains that preserve 
-critical pathological features for accurate diagnosis. Beyond robust cross-domain generalization, StainExpert offers 
-a transformative platform for efficient multi-target stain translation, advancing toward streamlined, tissue-conserving, 
-and resource-efficient diagnostic workflows in computational pathology.
+Pathological examination is critical for disease diagnosis, with various staining techniques providing detailed visualization of tissue structures. 
+While hematoxylin and eosin (H&E) staining remains predominant, the special stains, immunohistochemistry (IHC) and multiplex immunofluorescence (mpIF) provide valuable complementary information for comprehensive diagnosis.
+However, current multi-stain workflows are time-consuming, labor-intensive, and tissue-exhaustive, requiring either re-staining or additional tissue sectioning. 
+To address these challenges, we propose StainExpert, a unified multimodal diffusion framework for source-to-multi-target pathological stain translation. 
+Unlike existing approaches that require separate models for each staining pair, StainExpert establishes the first multi-expert system where specialized networks collaboratively learn staining principles while maintaining domain-specific expertise. 
+Through multi-expert and multi-objective optimization, it enables efficient translation from a single source to multiple targets. 
+Additionally, our multimodal diffusion architecture integrates textual guidance with visual features, achieving superior accuracy and pathology-informed translation. 
+Leveraging parameter-efficient design and model distillation, StainExpert matches GAN-level efficiency while delivering superior generation quality. 
+We validate StainExpert across three datasets spanning H&E, special stains, IHC, and mpIF modalities. 
+Extensive evaluation demonstrates that StainExpert generates high-quality virtual stains that preserve critical pathological features for accurate diagnosis. 
+Beyond robust cross-domain generalization, StainExpert offers a transformative platform for efficient multi-target stain translation, advancing toward streamlined, tissue-conserving, and resource-efficient diagnostic workflows in computational pathology.
 
 
 ## 🗄️ Enviroments
@@ -35,8 +30,8 @@ and resource-efficient diagnostic workflows in computational pathology.
 
 ## 🗃️ Usage
 ### 1. Prepare the data (e.g. ANHIR-kidney)
-    <details>
-    <summary> assume the multi-stain dataset is in `/path/to/anhir-kidney`. It should be like this:</summary>
+
+    assume the multi-stain dataset is in `/path/to/anhir-kidney`. It should be like this:
 
     ```
     path/to/anhir-kidney/:
@@ -49,17 +44,46 @@ and resource-efficient diagnostic workflows in computational pathology.
                 MAS_images_2.JPEG ...
             ... 
 
+        val/:
+            HE/: 
+                HE_images_1.JPEG ...
+            MAS/: 
+                MAS_images_1.JPEG ...
+            ...
+
         test/:
             HE/: 
                 HE_images_1.JPEG ...
             MAS/: 
                 MAS_images_1.JPEG ...
             ...
-       ```
-   **NOTE: The arg `--data_path=/path/to/dataset` should be passed to the training script.**
-    </details>
+    ```
 
-### 2. Train the StainExpert model<br/>
+### 2. Prepare the asset file
+
+Download the [CLIP](https://huggingface.co/YeungNLP/clip-vit-bert-chinese-1M/tree/main) and [sd-turbo](https://huggingface.co/stabilityai/sd-turbo) into `asset/`.
+
+    ```
+    asset/:
+        clip/:
+            config.json
+            preprocessor_config.json
+            pytorch_model.bin
+            tokenizer.json
+            tokenizer_config.json
+            ... 
+
+        sd-turbo/:
+            scheduler/: 
+                scheduler_config.json
+            text_encoder/: 
+                model.safetensors ...
+            tokenizer/:
+                vocab.json ...
+            ...
+    ```
+
+### 3. Train the StainExpert model<br/>
 ```bash
 python train.py
 --train_data_path /path/to/anhir-kidney/train
@@ -69,6 +93,11 @@ python train.py
 --step 100000
 ```
 
+### 3. Test the StainExpert model<br/>
+```bash
+python test.py
+--test_data_path /path/to/anhir-kidney/test
+```
 
 ## 🗂️ Materials
 The comparison methods are listed here:
@@ -91,4 +120,4 @@ This implementation is based on / inspired by:<br/>
 
 
 ## 🗃️ Reference
-<Liu et al. StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation (2025)>
+<Liu et al. StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation[J], IEEE TMI, 2025>

@@ -47,10 +47,12 @@ def parse_args_training():
     parser.add_argument("--lambda_idt_lpips", default=1.0, type=float)
 
     # args for dataset and dataloader options
-    parser.add_argument("--train_data_path", type=str, default=r"/path/to/anhir-kidney/train")  # fixme
-    parser.add_argument("--val_data_path", type=str, default=r"/path/to/anhir-kidney/val")  # fixme
+    parser.add_argument("--train_data_path", type=str, default=r"/path/to/anhir-kidney/train")
+    parser.add_argument("--val_data_path", type=str, default=r"/path/to/anhir-kidney/val")
+    parser.add_argument("--test_data_path", type=str, default=r"/path/to/anhir-kidney/test")
     parser.add_argument("--train_img_prep", type=str, default="random_crop_256")
     parser.add_argument("--val_img_prep", type=str, default="center_crop_256")
+    parser.add_argument("--test_img_prep", type=str, default="center_crop_256")
     parser.add_argument("--dataloader_num_workers", type=int, default=0)
     parser.add_argument("--train_batch_size", type=int, default=8, help="Batch size (per device) for the training dataloader.")
     parser.add_argument("--max_train_epochs", type=int, default=100)
@@ -68,9 +70,9 @@ def parse_args_training():
     parser.add_argument("--output_dir", type=str, default="output")
     parser.add_argument("--report_to", type=str, default="wandb")
     parser.add_argument("--tracker_project_name", type=str, default="train")  # track the training project
-    parser.add_argument("--validation_steps", type=int, default=20000)  # 20000
+    parser.add_argument("--validation_steps", type=int, default=10000)
     parser.add_argument("--validation_num_images", type=int, default=-1, help="Number of images to use for validation. -1 to use all images.")
-    parser.add_argument("--checkpointing_steps", type=int, default=20000)  # 20000
+    parser.add_argument("--checkpointing_steps", type=int, default=10000)
 
     # args for the optimization options
     parser.add_argument("--learning_rate", type=float, default=1e-5,)
@@ -127,10 +129,6 @@ def build_transform(image_prep):
         T = transforms.Compose([
             transforms.Resize((512, 512), interpolation=Image.LANCZOS)
         ])
-    elif image_prep == 'crop_128':
-        T = transforms.Compose([
-            transforms.CenterCrop(128),
-        ])
     elif image_prep == 'random_crop_256':
         T = transforms.Compose([
             transforms.RandomCrop(256),
@@ -139,110 +137,7 @@ def build_transform(image_prep):
         T = transforms.Compose([
             transforms.CenterCrop(256),
         ])
-    elif image_prep == 'resize_crop_128':
-        T = transforms.Compose([
-            transforms.Resize((256, 256), interpolation=Image.LANCZOS),
-            transforms.RandomCrop((128, 128)),
-        ])
-    elif image_prep == 'test_resize_crop_128':
-        T = transforms.Compose([
-            transforms.Resize((256, 256), interpolation=Image.LANCZOS),
-            transforms.CenterCrop((128, 128)),
-        ])
     return T
-
-
-class PairedDataset(torch.utils.data.Dataset):
-    def __init__(self, dataset_folder, split, image_prep, tokenizer):
-        """
-        Itialize the paired dataset object for loading and transforming paired data samples
-        from specified dataset folders.
-
-        This constructor sets up the paths to input and output folders based on the specified 'split',
-        loads the captions (or prompts) for the input images, and prepares the transformations and
-        tokenizer to be applied on the data.
-
-        Parameters:
-        - dataset_folder (str): The root folder containing the dataset, expected to include
-                                sub-folders for different splits (e.g., 'train_A', 'train_B').
-        - split (str): The dataset split to use ('train' or 'test'), used to select the appropriate
-                       sub-folders and caption files within the dataset folder.
-        - image_prep (str): The image preprocessing transformation to apply to each image.
-        - tokenizer: The tokenizer used for tokenizing the captions (or prompts).
-        """
-        super().__init__()
-        if split == "train":
-            self.input_folder = os.path.join(dataset_folder, "train_A")
-            self.output_folder = os.path.join(dataset_folder, "train_B")
-            captions = os.path.join(dataset_folder, "train_prompts.json")
-        elif split == "test":
-            self.input_folder = os.path.join(dataset_folder, "test_A")
-            self.output_folder = os.path.join(dataset_folder, "test_B")
-            captions = os.path.join(dataset_folder, "test_prompts.json")
-        with open(captions, "r") as f:
-            self.captions = json.load(f)
-        self.img_names = list(self.captions.keys())
-        self.T = build_transform(image_prep)
-        self.tokenizer = tokenizer
-
-    def __len__(self):
-        """
-        Returns:
-        int: The total number of items in the dataset.
-        """
-        return len(self.captions)
-
-    def __getitem__(self, idx):
-        """
-        Retrieves a dataset item given its index. Each item consists of an input image,
-        its corresponding output image, the captions associated with the input image,
-        and the tokenized form of this caption.
-
-        This method performs the necessary preprocessing on both the input and output images,
-        including scaling and normalization, as well as tokenizing the caption using a provided tokenizer.
-
-        Parameters:
-        - idx (int): The index of the item to retrieve.
-
-        Returns:
-        dict: A dictionary containing the following key-value pairs:
-            - "output_pixel_values": a tensor of the preprocessed output image with pixel values
-            scaled to [-1, 1].
-            - "conditioning_pixel_values": a tensor of the preprocessed input image with pixel values
-            scaled to [0, 1].
-            - "caption": the text caption.
-            - "input_ids": a tensor of the tokenized caption.
-
-        Note:
-        The actual preprocessing steps (scaling and normalization) for images are defined externally
-        and passed to this class through the `image_prep` parameter during initialization. The
-        tokenization process relies on the `tokenizer` also provided at initialization, which
-        should be compatible with the models intended to be used with this dataset.
-        """
-        img_name = self.img_names[idx]
-        input_img = Image.open(os.path.join(self.input_folder, img_name))
-        output_img = Image.open(os.path.join(self.output_folder, img_name))
-        caption = self.captions[img_name]
-
-        # input images scaled to 0,1
-        img_t = self.T(input_img)
-        img_t = F.to_tensor(img_t)
-        # output images scaled to -1,1
-        output_t = self.T(output_img)
-        output_t = F.to_tensor(output_t)
-        output_t = F.normalize(output_t, mean=[0.5], std=[0.5])
-
-        input_ids = self.tokenizer(
-            caption, max_length=self.tokenizer.model_max_length,
-            padding="max_length", truncation=True, return_tensors="pt"
-        ).input_ids
-
-        return {
-            "output_pixel_values": output_t,
-            "conditioning_pixel_values": img_t,
-            "caption": caption,
-            "input_ids": input_ids,
-        }
 
 
 class UnpairedDataset(torch.utils.data.Dataset):

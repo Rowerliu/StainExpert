@@ -647,7 +647,7 @@ def main(args):
                             * args.lambda_idt_lpips
                     )
 
-                    # 更新专家使用计数
+                    # Update expert usage statistics
                     expert_weight = expert_weight_a2b[0].tolist()
                     expert_idx = list(
                         map(

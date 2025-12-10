@@ -63,7 +63,7 @@ def main(args):
     vae_enc = VAE_encode(vae_a2b, vae_b2a=vae_b2a)
     vae_dec = VAE_decode(vae_a2b, vae_b2a=vae_b2a)
 
-    dataset_test = UnpairedDataset(dataset_folder=args.val_dataset_folder, image_prep=args.val_img_prep, classes=args.classes)
+    dataset_test = UnpairedDataset(dataset_folder=args.test_dataset_folder, image_prep=args.test_img_prep, classes=args.classes)
     num_testdata = dataset_test.__len__() // len(dataset_test.dataset_folders)
     test_dataloader = torch.utils.data.DataLoader(dataset_test, batch_size=args.train_batch_size, shuffle=False,
                                                    num_workers=args.dataloader_num_workers)
