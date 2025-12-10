@@ -35,7 +35,7 @@ def parse_args_training():
     parser.add_argument("--topk_experts", default=2, type=int)
     parser.add_argument("--fusion_method", default="cross_attention", type=str, choices=["concat", "cross_attention", "film"])
     parser.add_argument("--expert_diversity_weight", default=1, type=float)
-    parser.add_argument("--expert_balancing_strength", default=0.2, type=float)
+    parser.add_argument("--expert_balancing_strength", default=0.1, type=float)
 
     # args for the loss function
     parser.add_argument("--gan_disc_type", default="vagan_clip")

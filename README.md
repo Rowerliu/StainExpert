@@ -97,6 +97,8 @@ python train.py
 ```bash
 python test.py
 --test_data_path /path/to/anhir-kidney/test
+--experts 4
+--topk 2
 ```
 
 ## 🗂️ Materials
