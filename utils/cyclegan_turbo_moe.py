@@ -319,7 +319,6 @@ class MoEAdapterUNet(nn.Module):
             sample: torch.FloatTensor,
             timestep: Union[torch.Tensor, float, int],
             encoder_hidden_states: torch.Tensor,
-            expert_split: Optional[torch.Tensor] = False,
             expert_assign: Optional[torch.Tensor] = None,
             gating_input: Optional[torch.Tensor] = None,
             **kwargs
@@ -354,16 +353,12 @@ class MoEAdapterUNet(nn.Module):
             output = self.unet(sample=sample, timestep=timestep, encoder_hidden_states=encoder_hidden_states, **kwargs).sample
             expert_outputs.append(output)
 
-        if expert_split and self.top_k > 1:
-            # 独立单个专家的输出
-            combined_output = torch.stack(expert_outputs, dim=0)
-        else:
-            # 融合所有专家的输出
-            combined_output = torch.zeros_like(expert_outputs[0])
-            for i, expert_output in enumerate(expert_outputs):
-                batch_size = expert_output.shape[0]
-                weights = topk_weights[:batch_size, i].view(-1, 1, 1, 1)
-                combined_output += expert_output * weights
+        # 融合所有专家的输出
+        combined_output = torch.zeros_like(expert_outputs[0])
+        for i, expert_output in enumerate(expert_outputs):
+            batch_size = expert_output.shape[0]
+            weights = topk_weights[:batch_size, i].view(-1, 1, 1, 1)
+            combined_output += expert_output * weights
 
         # 返回结果
         return combined_output, expert_weights, topk_weights
@@ -414,7 +409,6 @@ def initialize_unet(
         init_lora_weights="gaussian",
         target_modules=l_layer_high,
         lora_alpha=rank * 4,
-        # lora_dropout=0.1
     )
 
     # 设置共同学习层
@@ -425,30 +419,21 @@ def initialize_unet(
     adapter_names = []
     initial_adapter_names = [lora_name_high]
     for expert_id in range(num_experts):
-        # scale = random.randint(1, 32)
         scale = 4
         lora_conf_mid = LoraConfig(
             r=rank // 2,
             init_lora_weights="gaussian",
-            # init_lora_weights=False,
             target_modules=l_layer_mid,
             lora_alpha=rank // 2 * scale,
-            # lora_dropout=0.1
         )
         lora_conf_low = LoraConfig(
             r=rank // 4,
             init_lora_weights="gaussian",
-            # init_lora_weights=False,
             target_modules=l_layer_low,
             lora_alpha=rank // 4 * scale,
-            # lora_dropout=0.1
         )
 
-        # check model trainable parameter
-        # analyze_unet_parameters(model=unet, model_name="unet")
-
         # 为每个专家添加适配器
-        # lora_high_name = f"Expert{expert_id}_HIlayer"
         lora_name_mid = f"expert_{expert_id}_M-layer"
         lora_name_low = f"expert_{expert_id}_L-layer"
 
@@ -501,8 +486,7 @@ def initialize_vae(rank=4, return_lora_module_names=False):
     vae.decoder.ignore_skip = False
     vae.decoder.gamma = 1
     l_vae_target_modules = ["conv1", "conv2", "conv_in", "conv_shortcut", "conv", "conv_out", "skip_conv_1",
-                            "skip_conv_2", "skip_conv_3", "skip_conv_4", "to_k", "to_q", "to_v", "to_out.0",
-                            ]
+                            "skip_conv_2", "skip_conv_3", "skip_conv_4", "to_k", "to_q", "to_v", "to_out.0",]
     vae_lora_config = LoraConfig(r=rank, init_lora_weights="gaussian", target_modules=l_vae_target_modules)
     vae = get_peft_model(vae, vae_lora_config)  # fixme
     # vae.add_adapter(vae_lora_config, adapter_name="vae_skip")
@@ -543,7 +527,7 @@ class CycleGAN_Turbo(torch.nn.Module):
             self.caption = "driving in the day"
             self.direction = "b2a"
         elif pretrained_name == "clear_to_rainy":
-            sd = torch.load(r'F:\00_code\01_python\10_PST-Diff\11_img2img-turbo-main\checkpoint\clear2rainy.pkl')
+            sd = torch.load(r'clear2rainy.pkl')
             self.load_ckpt_from_state_dict(sd)
             self.timesteps = torch.tensor([999], device="cuda").long()
             self.caption = "driving in heavy rain"
@@ -616,11 +600,11 @@ class CycleGAN_Turbo(torch.nn.Module):
         self.load_ckpt_from_state_dict(sd)
 
     @staticmethod
-    def forward_with_networks(x, direction, vae_enc, unet, vae_dec, sched, timesteps, text_emb, expert_split=False, expert_assign=None):
+    def forward_with_networks(x, direction, vae_enc, unet, vae_dec, sched, timesteps, text_emb, expert_assign=None):
         B = x.shape[0]
         assert direction in ["a2b", "b2a"]
         x_enc = vae_enc(x, direction=direction).to(x.dtype)
-        model_pred, expert_weights, topk_weights = unet(x_enc, timesteps, encoder_hidden_states=text_emb, expert_split=expert_split, expert_assign=expert_assign)
+        model_pred, expert_weights, topk_weights = unet(x_enc, timesteps, encoder_hidden_states=text_emb, expert_assign=expert_assign)
         if len(model_pred.shape) == 5:
             x_out_dec = []
             for i in range(model_pred.shape[0]):

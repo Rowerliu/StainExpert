@@ -3,7 +3,7 @@
 **StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation**<br/>
 
 [Zeyu Liu](https://github.com/Rowerliu) et al.<br/>
-[GitHub](https://github.com/Rowerliu/StainExpert#) (Full code will be released upon acceptance)
+[GitHub](https://github.com/Rowerliu/StainExpert#)
 
 <img src="asset/StainExpert.png" height="300" />
 </div>
@@ -61,7 +61,12 @@ and resource-efficient diagnostic workflows in computational pathology.
 
 ### 2. Train the StainExpert model<br/>
 ```bash
-python train.py --data /path/to/anhir-kidney --experts 4 --topk 2 --step 100000
+python train.py
+--train_data_path /path/to/anhir-kidney/train
+--val_data_path /path/to/anhir-kidney/val
+--experts 4
+--topk 2
+--step 100000
 ```
 
 

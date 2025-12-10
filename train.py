@@ -133,7 +133,6 @@ def main(args):
     noise_scheduler_step = make_1step_sched()
     text_hidden_size = text_encoder.config.hidden_size
     text_seq_len = text_encoder.config.max_position_embeddings
-    expert_split = args.expert_split
     expert_assign_ratio = args.expert_assign_ratio
 
     unet, unet_lora_layer_high, unet_lora_layer_mid, unet_lora_layer_low = initialize_unet(
@@ -398,7 +397,6 @@ def main(args):
                                                                                                          noise_scheduler_step,
                                                                                                          timesteps,
                                                                                                          fixed_b2a_emb,
-                                                                                                         expert_split,
                                                                                                          )
                     fake_b, expert_weight_a2b, topk_weight_fake_b = CycleGAN_Turbo.forward_with_networks(img_a, "a2b",
                                                                                                          vae_enc, unet,
@@ -406,7 +404,6 @@ def main(args):
                                                                                                          noise_scheduler_step,
                                                                                                          timesteps,
                                                                                                          fixed_a2b_emb,
-                                                                                                         expert_split,
                                                                                                          )
 
                     # 更新专家使用计数
@@ -414,17 +411,8 @@ def main(args):
                     expert_idx = list(map(expert_weight.index, heapq.nlargest(args.topk_experts, expert_weight)))
                     expert_usage_counter[expert_idx] += bsz
 
-                    if expert_split:
-                        loss_gan_a = 0
-                        loss_gan_b = 0
-                        for j in range(fake_b.shape[0]):
-                            loss_gan_a += net_discs[i](fake_b[j],
-                                                       for_G=True).mean() * args.lambda_gan * topk_weight_fake_b[:bsz, j]
-                            loss_gan_b += net_discs[0](fake_a[j],
-                                                       for_G=True).mean() * args.lambda_gan * topk_weight_fake_a[:bsz, j]
-                    else:
-                        loss_gan_a = net_discs[i](fake_b, for_G=True).mean() * args.lambda_gan
-                        loss_gan_b = net_discs[0](fake_a, for_G=True).mean() * args.lambda_gan
+                    loss_gan_a = net_discs[i](fake_b, for_G=True).mean() * args.lambda_gan
+                    loss_gan_b = net_discs[0](fake_a, for_G=True).mean() * args.lambda_gan
 
                     total_gan_loss = loss_gan_a + loss_gan_b
 
@@ -444,17 +432,10 @@ def main(args):
                                                                                                        noise_scheduler_step,
                                                                                                        timesteps,
                                                                                                        fixed_a2b_emb,
-                                                                                                       expert_split,
                                                                                                        expert_assign)
 
-                    if expert_split:
-                        loss_idt_a = 0
-                        for j in range(idt_a.shape[0]):
-                            loss_idt_a += crit_idt(idt_a[j], img_b) * args.lambda_idt * topk_weight_idt_a[:bsz, j]
-                            loss_idt_a += net_lpips(idt_a[j], img_b).mean() * args.lambda_idt_lpips * topk_weight_idt_a[:bsz, j]
-                    else:
-                        loss_idt_a = crit_idt(idt_a, img_b) * args.lambda_idt
-                        loss_idt_a += net_lpips(idt_a, img_b).mean() * args.lambda_idt_lpips
+                    loss_idt_a = crit_idt(idt_a, img_b) * args.lambda_idt
+                    loss_idt_a += net_lpips(idt_a, img_b).mean() * args.lambda_idt_lpips
 
                     # 更新专家使用计数
                     expert_weight = expert_weight_a2b[0].tolist()
@@ -467,17 +448,10 @@ def main(args):
                                                                                                        noise_scheduler_step,
                                                                                                        timesteps,
                                                                                                        fixed_b2a_emb,
-                                                                                                       expert_split,
                                                                                                        )
 
-                    if expert_split:
-                        loss_idt_b = 0
-                        for j in range(idt_b.shape[0]):
-                            loss_idt_b += crit_idt(idt_b[j], img_a) * args.lambda_idt * topk_weight_idt_b[:bsz, j]
-                            loss_idt_b += net_lpips(idt_b[j], img_a).mean() * args.lambda_idt_lpips * topk_weight_idt_b[:bsz, j]
-                    else:
-                        loss_idt_b = crit_idt(idt_b, img_a) * args.lambda_idt
-                        loss_idt_b += net_lpips(idt_b, img_a).mean() * args.lambda_idt_lpips
+                    loss_idt_b = crit_idt(idt_b, img_a) * args.lambda_idt
+                    loss_idt_b += net_lpips(idt_b, img_a).mean() * args.lambda_idt_lpips
 
                     # 更新专家使用计数
                     expert_weight = expert_weight_a2b[0].tolist()
@@ -496,19 +470,8 @@ def main(args):
                     """
                     Discriminator for task a->b and b->a (fake inputs)
                     """
-                    if expert_split:
-                        loss_D_A_fake = 0
-                        loss_D_B_fake = 0
-                        for j in range(fake_a.shape[0]):
-                            loss_D_A_fake += net_discs[i](fake_b[j].detach(),
-                                                          for_real=False).mean() * args.lambda_gan * topk_weight_fake_b[
-                                                                                                     :bsz, j].detach()
-                            loss_D_B_fake += net_discs[0](fake_a[j].detach(),
-                                                          for_real=False).mean() * args.lambda_gan * topk_weight_fake_a[
-                                                                                                     :bsz, j].detach()
-                    else:
-                        loss_D_A_fake = net_discs[i](fake_b.detach(), for_real=False).mean() * args.lambda_gan
-                        loss_D_B_fake = net_discs[0](fake_a.detach(), for_real=False).mean() * args.lambda_gan
+                    loss_D_A_fake = net_discs[i](fake_b.detach(), for_real=False).mean() * args.lambda_gan
+                    loss_D_B_fake = net_discs[0](fake_a.detach(), for_real=False).mean() * args.lambda_gan
 
                     loss_D_fake = (loss_D_A_fake + loss_D_B_fake) * 0.5
                     accelerator.backward(loss_D_fake, retain_graph=False)
@@ -633,22 +596,6 @@ def main(args):
                                 img_a = transforms.Normalize([0.5], [0.5])(img_a).unsqueeze(0).cuda()
                                 for i in range(0, args.num_classes):
                                     direction = "a2b"
-                                    # Single expert output
-                                    expert_assign = torch.zeros(1, args.num_experts, device=img_a.device)
-                                    expert_assign[:, i] = 1
-                                    eval_fake_b, _, _ = CycleGAN_Turbo.forward_with_networks(img_a, direction,
-                                                                                             eval_vae_enc, eval_unet,
-                                                                                             eval_vae_dec,
-                                                                                             noise_scheduler_step,
-                                                                                             _timesteps,
-                                                                                             fixed_emb[i][0:1],
-                                                                                             expert_assign=expert_assign)
-                                    name = input_img_path.split('\\')[-1].split('.')[0]
-                                    outf = os.path.join(output_dir_s, f"{name}_{i}.jpg")
-                                    eval_fake_b_pil = transforms.ToPILImage()(eval_fake_b[0] * 0.5 + 0.5)
-                                    eval_fake_b_pil.save(outf)
-
-                                    # Mixture of expert output
                                     expert_assign = None
                                     eval_fake_b, _, _ = CycleGAN_Turbo.forward_with_networks(img_a, direction,
                                                                                              eval_vae_enc, eval_unet,

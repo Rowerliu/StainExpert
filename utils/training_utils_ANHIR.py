@@ -33,7 +33,6 @@ def parse_args_training():
     # args for the loss function
     parser.add_argument("--num_experts", default=4, type=int)
     parser.add_argument("--topk_experts", default=2, type=int)
-    parser.add_argument("--expert_split", default=True, type=bool)  # split expert output or fusion output
     parser.add_argument("--fusion_method", default="cross_attention", type=str, choices=["concat", "cross_attention", "film"])
     parser.add_argument("--expert_diversity_weight", default=1, type=float)
     parser.add_argument("--expert_balancing_strength", default=0.2, type=float)
@@ -48,12 +47,12 @@ def parse_args_training():
     parser.add_argument("--lambda_idt_lpips", default=1.0, type=float)
 
     # args for dataset and dataloader options
-    parser.add_argument("--train_dataset_folder", type=str, default=r"your/train/dataset")  # fixme
-    parser.add_argument("--val_dataset_folder", type=str, default=r"your/val/dataset")  # fixme
+    parser.add_argument("--train_data_path", type=str, default=r"/path/to/anhir-kidney/train")  # fixme
+    parser.add_argument("--val_data_path", type=str, default=r"/path/to/anhir-kidney/val")  # fixme
     parser.add_argument("--train_img_prep", type=str, default="random_crop_256")
     parser.add_argument("--val_img_prep", type=str, default="center_crop_256")
     parser.add_argument("--dataloader_num_workers", type=int, default=0)
-    parser.add_argument("--train_batch_size", type=int, default=1, help="Batch size (per device) for the training dataloader.")
+    parser.add_argument("--train_batch_size", type=int, default=8, help="Batch size (per device) for the training dataloader.")
     parser.add_argument("--max_train_epochs", type=int, default=100)
     parser.add_argument("--max_train_steps", type=int, default=100001)
 
