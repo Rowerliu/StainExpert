@@ -143,12 +143,12 @@ def main(args):
     # ----------------------------------------------------------------------
     ## Using pretrain CLIP
     tokenizer = AutoTokenizer.from_pretrained(
-        r"assets/sd-turbo/tokenizer",
+        r"asset/sd-turbo/tokenizer",
         revision=args.revision,
         use_fast=False,
     )
     text_encoder = CLIPTextModel.from_pretrained(
-        r"assets/sd-turbo/text_encoder"
+        r"asset/sd-turbo/text_encoder"
     ).cuda()
 
     ## Using Fine-tuned CLIP
@@ -168,7 +168,7 @@ def main(args):
     # UNet & VAE
     # ----------------------------------------------------------------------
     unet, unet_lora_layer_high, unet_lora_layer_mid, unet_lora_layer_low = initialize_unet(
-        base_model_path="assets/sd-turbo/unet",
+        base_model_path="asset/sd-turbo/unet",
         rank=args.lora_rank_unet,
         num_experts=args.num_experts,
         top_k=args.topk_experts,

@@ -57,7 +57,7 @@ def parse_args_training():
     parser.add_argument("--max_train_steps", type=int, default=100001)
 
     # args for the model
-    parser.add_argument("--pretrained_model_name_or_path", default=r"assets\sd-turbo")
+    parser.add_argument("--pretrained_model_name_or_path", default=r"asset\sd-turbo")
     parser.add_argument("--revision", default=None, type=str)
     parser.add_argument("--variant", default=None, type=str)
     parser.add_argument("--lora_rank_unet", default=128, type=int)
