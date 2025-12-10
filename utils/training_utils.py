@@ -27,8 +27,8 @@ def parse_args_training():
     parser.add_argument("--seed", type=int, default=2025, help="A seed for reproducible training.")
 
     # args for the data
-    parser.add_argument("--num_classes", default=4, type=int)
-    parser.add_argument("--classes", default=['HE', 'MAS', 'PAS', 'PASM'], type=list)
+    parser.add_argument("--num_classes", default=4, type=int)  # for ANHIR-kidney dataset
+    parser.add_argument("--classes", default=['HE', 'MAS', 'PAS', 'PASM'], type=list)  # for ANHIR-kidney dataset
 
     # args for the loss function
     parser.add_argument("--num_experts", default=4, type=int)

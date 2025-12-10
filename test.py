@@ -12,7 +12,7 @@ from torchvision import transforms
 from transformers import AutoTokenizer, CLIPTextModel
 from utils.model import make_1step_sched
 from utils.cyclegan_turbo_moe import CycleGAN_Turbo, VAE_encode, VAE_decode, initialize_unet, initialize_vae
-from utils.training_utils_ANHIR import UnpairedDataset, parse_args_training
+from utils.training_utils import UnpairedDataset, parse_args_training
 
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
@@ -82,7 +82,7 @@ def main(args):
     _timesteps = torch.tensor([noise_scheduler_1step.config.num_train_timesteps - 1] * 1,
                               device="cuda").long()
 
-    checkpoint_path = rf'01_result/20250424_DeepLIIF-c384_expert-split-4-2/checkpoints/model_3000.pkl'
+    checkpoint_path = 'output/model.pkl'
     checkpoint = torch.load(checkpoint_path, map_location='cuda:0')
     if accelerator.is_main_process:
         eval_unet = accelerator.unwrap_model(unet)
@@ -105,7 +105,6 @@ def main(args):
     fid_output_dir_m = os.path.join(args.output_dir, f"translation_step{model_step:06d}_multi-expert_test")
     os.makedirs(fid_output_dir_m, exist_ok=True)
 
-    # eval_unet.train()
     eval_unet.eval()
 
     for idx, batch in enumerate(test_dataloader):
@@ -138,32 +137,8 @@ def main(args):
                 eval_fake_b_pil.save(outf)
 
                 print(f'Translate: {img_a_path}_{i}.jpg')
-    # for idx, batch in enumerate(test_dataloader):
-    #     if idx > num_testdata:
-    #         break
-    #     with torch.no_grad():
-    #         img_a = batch['pixel_values_list'][0].to(dtype=weight_dtype).cuda()
-    #         img_a_path = batch['pixel_name_list'][0][0]
-    #         for i in range(0, args.num_classes):
-    #             for j in range(0, args.num_classes):
-    #                 expert_assign = torch.zeros(1, args.num_experts, device=img_a.device)
-    #                 expert_assign[:, i] = 1
-    #                 eval_fake_b, _ = CycleGAN_Turbo.forward_with_networks(img_a, "a2b", eval_vae_enc, eval_unet,
-    #                                 eval_vae_dec, noise_scheduler_1step, _timesteps, fixed_emb[j][0:1], expert_assign)
-    #                 outf = os.path.join(fid_output_dir_m, f"{img_a_path}_expert-{i}_text-{j}.png")
-    #                 eval_fake_b_pil = transforms.ToPILImage()(eval_fake_b[0] * 0.5 + 0.5)
-    #                 eval_fake_b_pil.save(outf)
-    #                 print(f'Translate: {img_a_path}_{i}_{j}.png')
-
-                # eval_fake_b, _ = CycleGAN_Turbo.forward_with_networks(img_a, "a2b", eval_vae_enc, eval_unet,
-                #                 eval_vae_dec, noise_scheduler_1step, _timesteps, fixed_emb[i][0:1])
-                # outf = os.path.join(fid_output_dir_m, f"{img_a_path}_st_{i}.png")
-                # eval_fake_b_pil = transforms.ToPILImage()(eval_fake_b[0] * 0.5 + 0.5)
-                # eval_fake_b_pil.save(outf)
-                # print(f'Translate: {img_a_path}_st_{i}.png')
 
 
 if __name__ == "__main__":
-    with torch.cuda.device(0):
-        args = parse_args_training()
-        main(args)
+    args = parse_args_training()
+    main(args)

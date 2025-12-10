@@ -10,7 +10,6 @@ import heapq
 import random
 import torch.nn.functional as F
 from glob import glob
-from shutil import copyfile
 from accelerate import Accelerator
 from accelerate.utils import set_seed
 from PIL import Image
@@ -19,16 +18,10 @@ from tqdm.auto import tqdm
 from transformers import AutoTokenizer, CLIPTextModel
 from diffusers.optimization import get_scheduler
 import vision_aided_loss
-from utils.model import make_1step_sched, make_4step_sched
+from utils.model import make_1step_sched
 from utils.cyclegan_turbo_moe import CycleGAN_Turbo, VAE_encode, VAE_decode, initialize_unet, initialize_vae
 from utils.training_utils import UnpairedDataset, build_transform, parse_args_training
 from utils import logger
-
-import ssl
-ssl._create_default_https_context = ssl._create_unverified_context
-
-import warnings
-warnings.simplefilter("ignore")
 
 
 def compute_expert_diversity_loss(expert_weights):
@@ -616,6 +609,5 @@ def main(args):
 
 
 if __name__ == "__main__":
-    with torch.cuda.device(0):
-        args = parse_args_training()
-        main(args)
+    args = parse_args_training()
+    main(args)
