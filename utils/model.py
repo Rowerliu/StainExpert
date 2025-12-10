@@ -6,20 +6,20 @@ import sys
 sys.path.append("..")
 
 def make_1step_sched():
-    noise_scheduler_1step = DDPMScheduler.from_pretrained(r"assets\sd-turbo", subfolder="scheduler")
+    noise_scheduler_1step = DDPMScheduler.from_pretrained(r"asset\sd-turbo", subfolder="scheduler")
     noise_scheduler_1step.set_timesteps(1, device="cuda")
     noise_scheduler_1step.alphas_cumprod = noise_scheduler_1step.alphas_cumprod.cuda()
     return noise_scheduler_1step
 
 
 def make_4step_sched():
-    noise_scheduler_4step = DDPMScheduler.from_pretrained(r"assets\sd-turbo", subfolder="scheduler")
+    noise_scheduler_4step = DDPMScheduler.from_pretrained(r"asset\sd-turbo", subfolder="scheduler")
     noise_scheduler_4step.set_timesteps(4, device="cuda")
     noise_scheduler_4step.alphas_cumprod = noise_scheduler_4step.alphas_cumprod.cuda()
     return noise_scheduler_4step
 
 
-def my_vae_encoder_fwd(self, sample):
+def vae_encoder_fwd(self, sample):
     sample = self.conv_in(sample)
     l_blocks = []
     # down
@@ -35,7 +35,7 @@ def my_vae_encoder_fwd(self, sample):
     return sample
 
 
-def my_vae_decoder_fwd(self, sample, latent_embeds=None):
+def vae_decoder_fwd(self, sample, latent_embeds=None):
     sample = self.conv_in(sample)
     upscale_dtype = next(iter(self.up_blocks.parameters())).dtype
     # middle
@@ -67,7 +67,7 @@ def download_url(url, outf):
         print(f"Downloading checkpoint to {outf}")
         response = requests.get(url, stream=True)
         total_size_in_bytes = int(response.headers.get('content-length', 0))
-        block_size = 1024  # 1 Kibibyte
+        block_size = 1024
         progress_bar = tqdm(total=total_size_in_bytes, unit='iB', unit_scale=True)
         with open(outf, 'wb') as file:
             for data in response.iter_content(block_size):
