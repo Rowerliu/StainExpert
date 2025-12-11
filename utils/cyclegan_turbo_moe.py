@@ -102,7 +102,7 @@ class GatingNetwork(nn.Module):
 
     def __init__(
         self,
-        num_experts: int = 3,
+        num_experts: int = 4,
         top_k: int = 1,
         image_dim: int = 1024,
         text_dim: int = 1024,
@@ -640,7 +640,6 @@ class CycleGAN_Turbo(nn.Module):
         self,
         pretrained_name: Optional[str] = None,
         pretrained_path: Optional[str] = None,
-        ckpt_folder: str = "checkpoints",
     ):
         super().__init__()
         self.tokenizer = AutoTokenizer.from_pretrained("asset/sd-turbo/tokenizer")
@@ -677,31 +676,7 @@ class CycleGAN_Turbo(nn.Module):
         self.unet, self.vae = unet, vae
 
         # Load pretrained configurations
-        if pretrained_name == "day_to_night":
-            url = "https://www.cs.cmu.edu/~img2img-turbo/models/day2night.pkl"
-            self.load_ckpt_from_url(url, ckpt_folder)
-            self.timesteps = torch.tensor([999], device="cuda").long()
-            self.caption = "driving in the night"
-            self.direction = "a2b"
-        elif pretrained_name == "night_to_day":
-            url = "https://www.cs.cmu.edu/~img2img-turbo/models/night2day.pkl"
-            self.load_ckpt_from_url(url, ckpt_folder)
-            self.timesteps = torch.tensor([999], device="cuda").long()
-            self.caption = "driving in the day"
-            self.direction = "b2a"
-        elif pretrained_name == "clear_to_rainy":
-            sd = torch.load(r"clear2rainy.pkl")
-            self.load_ckpt_from_state_dict(sd)
-            self.timesteps = torch.tensor([999], device="cuda").long()
-            self.caption = "driving in heavy rain"
-            self.direction = "a2b"
-        elif pretrained_name == "rainy_to_clear":
-            url = "https://www.cs.cmu.edu/~img2img-turbo/models/rainy2clear.pkl"
-            self.load_ckpt_from_url(url, ckpt_folder)
-            self.timesteps = torch.tensor([999], device="cuda").long()
-            self.caption = "driving in the day"
-            self.direction = "b2a"
-        elif pretrained_name == "he_to_ihc":
+        if pretrained_name == "he_to_ihc":
             sd = torch.load(pretrained_path)
             self.load_ckpt_from_state_dict(sd)
             self.timesteps = torch.tensor([999], device="cuda").long()
