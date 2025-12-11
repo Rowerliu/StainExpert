@@ -26,6 +26,35 @@ sys.path.append("..")
 # VAE wrappers
 # -------------------------------------------------------------------------
 
+class VAE(nn.Module):
+    def __init__(self, vaes=None):
+        super(VAE, self).__init__()
+        self.vaes = vaes
+
+    def encode(self, x):
+        _vae = self.vaes[0]
+        return _vae.encode(x).latent_dist.sample() * _vae.config.scaling_factor
+
+    def decode(self, x, direction):
+        _vae = self.vaes[self.direction_list.index(direction)]
+        if self.direction_list.index(direction) % 2 == 0:
+            assert self.vaes[0].encoder.current_down_blocks is not None
+            _vae.decoder.incoming_skip_acts = self.vaes[0].encoder.current_down_blocks
+        else:
+            assert self.vaes[1].encoder.current_down_blocks is not None
+            _vae.decoder.incoming_skip_acts = self.vaes[1].encoder.current_down_blocks
+        x_decoded = (_vae.decode(x / _vae.config.scaling_factor).sample).clamp(-1, 1)
+        return x_decoded
+
+    def forward(self, fn, x, direction, direction_list):
+        if fn == 'encode':
+            return self.encode(x)
+        elif fn == 'decode':
+            return self.decode(x, direction, direction_list)
+        else:
+            raise NotImplementedError
+
+
 class VAE_encode(nn.Module):
     """
     Direction-aware VAE encoder wrapper.
@@ -34,7 +63,7 @@ class VAE_encode(nn.Module):
     scaled latent sample.
     """
 
-    def __init__(self, vae: AutoencoderKL, vae_b2a: Optional[AutoencoderKL] = None):
+    def __init__(self, vae, vae_b2a = None):
         super().__init__()
         self.vae = vae
         self.vae_b2a = vae_b2a
@@ -61,7 +90,7 @@ class VAE_decode(nn.Module):
     restores skip connections from the encoder.
     """
 
-    def __init__(self, vae: AutoencoderKL, vae_b2a: Optional[AutoencoderKL] = None):
+    def __init__(self, vae, vae_b2a = None):
         super().__init__()
         self.vae = vae
         self.vae_b2a = vae_b2a
