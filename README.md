@@ -88,6 +88,7 @@ Download the [CLIP](https://huggingface.co/YeungNLP/clip-vit-bert-chinese-1M/tre
 python train.py
 --train_data_path /path/to/anhir-kidney/train
 --val_data_path /path/to/anhir-kidney/val
+--num_classes 4
 --experts 4
 --topk 2
 --step 100000
