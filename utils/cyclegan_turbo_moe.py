@@ -7,12 +7,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformers import AutoTokenizer, CLIPTextModel
 from diffusers import AutoencoderKL, UNet2DConditionModel
 from peft import LoraConfig, get_peft_model, PeftMixedModel
 
 from utils.model import (
-    make_1step_sched,
     vae_encoder_fwd,
     vae_decoder_fwd,
     download_url,
