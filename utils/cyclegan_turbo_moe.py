@@ -636,62 +636,9 @@ class CycleGAN_Turbo(nn.Module):
     CycleGAN model built on SD-Turbo components.
     """
 
-    def __init__(
-        self,
-        pretrained_name: Optional[str] = None,
-        pretrained_path: Optional[str] = None,
-    ):
+    def __init__(self):
         super().__init__()
-        self.tokenizer = AutoTokenizer.from_pretrained("asset/sd-turbo/tokenizer")
-        self.text_encoder = CLIPTextModel.from_pretrained(
-            "asset/sd-turbo/text_encoder"
-        ).cuda()
-        self.sched = make_1step_sched()
 
-        vae = AutoencoderKL.from_pretrained("asset/sd-turbo/vae")
-        unet = UNet2DConditionModel.from_pretrained("asset/sd-turbo/unet")
-
-        vae.encoder.forward = vae_encoder_fwd.__get__(
-            vae.encoder, vae.encoder.__class__
-        )
-        vae.decoder.forward = vae_decoder_fwd.__get__(
-            vae.decoder, vae.decoder.__class__
-        )
-
-        # Add skip connection convolutions
-        vae.decoder.skip_conv_1 = nn.Conv2d(
-            512, 512, kernel_size=1, stride=1, bias=False
-        ).cuda()
-        vae.decoder.skip_conv_2 = nn.Conv2d(
-            256, 512, kernel_size=1, stride=1, bias=False
-        ).cuda()
-        vae.decoder.skip_conv_3 = nn.Conv2d(
-            128, 512, kernel_size=1, stride=1, bias=False
-        ).cuda()
-        vae.decoder.skip_conv_4 = nn.Conv2d(
-            128, 256, kernel_size=1, stride=1, bias=False
-        ).cuda()
-        vae.decoder.ignore_skip = False
-
-        self.unet, self.vae = unet, vae
-
-        # Load pretrained configurations
-        if pretrained_name == "he_to_ihc":
-            sd = torch.load(pretrained_path)
-            self.load_ckpt_from_state_dict(sd)
-            self.timesteps = torch.tensor([999], device="cuda").long()
-            self.caption = None
-            self.direction = "a2b"
-        elif pretrained_path is not None:
-            sd = torch.load(pretrained_path)
-            self.load_ckpt_from_state_dict(sd)
-            self.timesteps = torch.tensor([999], device="cuda").long()
-            self.caption = None
-            self.direction = None
-
-        self.vae_enc.cuda()
-        self.vae_dec.cuda()
-        self.unet.cuda()
 
     def load_ckpt_from_state_dict(self, sd: dict) -> None:
         """
