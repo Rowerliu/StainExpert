@@ -806,10 +806,8 @@ def main(args):
                         """
                         Evaluate "A->B"
                         """
-                        output_dir_m = os.path.join(args.output_dir, f"translation_step{global_step:06d}_multi-expert")
-                        os.makedirs(output_dir_m, exist_ok=True)
-                        output_dir_s = os.path.join(args.output_dir, f"translation_step{global_step:06d}_single-expert")
-                        os.makedirs(output_dir_s, exist_ok=True)
+                        output_dir = os.path.join(args.output_dir, f"translation_step{global_step:06d}_multi-expert")
+                        os.makedirs(output_dir, exist_ok=True)
 
                         # get val input images from domain a
                         for idx, input_img_path in enumerate(tqdm(l_images_test['0'])):
@@ -834,7 +832,7 @@ def main(args):
                                         expert_assign=expert_assign
                                     )
                                     name = input_img_path.split('\\')[-1].split('.')[0]
-                                    outf = os.path.join(output_dir_m, f"{name}_{i}.jpg")
+                                    outf = os.path.join(output_dir, f"{name}_{i}.jpg")
                                     eval_fake_b_pil = transforms.ToPILImage()(eval_fake_b[0] * 0.5 + 0.5)
                                     eval_fake_b_pil.save(outf)
 
