@@ -98,6 +98,7 @@ python train.py
 ```bash
 python test.py
 --test_data_path /path/to/anhir-kidney/test
+--num_classes 4
 --experts 4
 --topk 2
 ```
