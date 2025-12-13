@@ -94,7 +94,7 @@ python train.py
 --step 100000
 ```
 
-### 3. Test the StainExpert model<br/>
+### 4. Test the StainExpert model<br/>
 ```bash
 python test.py
 --test_data_path /path/to/anhir-kidney/test
