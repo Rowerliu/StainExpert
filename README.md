@@ -3,7 +3,7 @@
 **StainExpert: A Unified Multi-Expert Diffusion Framework for Multi-Target Pathological Stain Translation**<br/>
 
 [Zeyu Liu](https://github.com/Rowerliu) et al.<br/>
-[GitHub](https://github.com/Rowerliu/StainExpert#)
+[GitHub](https://github.com/Rowerliu/StainExpert#) | [Paper](https://ieeexplore.ieee.org/document/11284894)
 
 <img src="asset/StainExpert.png" height="300" />
 </div>
