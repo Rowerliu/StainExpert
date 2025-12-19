@@ -82,7 +82,7 @@ def parse_args_training():
     parser.add_argument("--adam_epsilon", type=float, default=1e-08, help="Epsilon value for the Adam optimizer")
     parser.add_argument("--max_grad_norm", default=10.0, type=float, help="Max gradient norm.")
     parser.add_argument("--lr_scheduler", type=str, default=None, help=(
-        'The scheduler type to use. Choose between ["linear", "cosine", "cosine_with_restarts", "polynomial", "constant", "constant_with_warmup"]'
+        'The scheduler type to use. Choose between ["linear", "cosine", "cosine_with_restarts", "polynomial", "constant", "constant_with_warmup"]. None for "cosine_schedule_with_warmup"'
         ),
     )
     parser.add_argument("--lr_warmup_steps", type=int, default=500, help="Number of steps for the warmup in the lr scheduler.")
