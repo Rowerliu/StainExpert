@@ -11,7 +11,6 @@ import sys
 sys.path.append("..")
 
 
-
 def parse_args_training():
     """
     Parses command-line arguments used for configuring an unpaired session (CycleGAN-Turbo).
