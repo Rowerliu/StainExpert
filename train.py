@@ -18,7 +18,7 @@ from torchvision import transforms
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer, CLIPTextModel
 from clip_chn.component.model import BertCLIPTextModel
-from diffusers.optimization import get_scheduler
+from diffusers.optimization import get_scheduler, get_cosine_schedule_with_warmup
 from utils.model import make_1step_sched
 from utils.cyclegan_turbo_moe import (
     CycleGAN_Turbo,
@@ -249,23 +249,36 @@ def main(args):
         weight_decay=args.adam_weight_decay,
         eps=args.adam_epsilon,
     )
-
-    lr_scheduler_gen = get_scheduler(
-        args.lr_scheduler,
-        optimizer=optimizer_gen,
-        num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
-        num_training_steps=args.max_train_steps * accelerator.num_processes,
-        num_cycles=args.lr_num_cycles,
-        power=args.lr_power,
-    )
-    lr_scheduler_disc = get_scheduler(
-        args.lr_scheduler,
-        optimizer=optimizer_disc,
-        num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
-        num_training_steps=args.max_train_steps * accelerator.num_processes,
-        num_cycles=args.lr_num_cycles,
-        power=args.lr_power,
-    )
+    if args.lr_scheduler is None:
+        lr_scheduler_gen = get_cosine_schedule_with_warmup(
+            optimizer=optimizer_gen,
+            num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+            num_training_steps=args.max_train_steps * accelerator.num_processes,
+            num_cycles=args.lr_num_cycles,
+        )
+        lr_scheduler_disc = get_cosine_schedule_with_warmup(
+            optimizer=optimizer_disc,
+            num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+            num_training_steps=args.max_train_steps * accelerator.num_processes,
+            num_cycles=args.lr_num_cycles,
+        )
+    else:
+        lr_scheduler_gen = get_scheduler(
+            args.lr_scheduler,
+            optimizer=optimizer_gen,
+            num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+            num_training_steps=args.max_train_steps * accelerator.num_processes,
+            num_cycles=args.lr_num_cycles,
+            power=args.lr_power,
+        )
+        lr_scheduler_disc = get_scheduler(
+            args.lr_scheduler,
+            optimizer=optimizer_disc,
+            num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+            num_training_steps=args.max_train_steps * accelerator.num_processes,
+            num_cycles=args.lr_num_cycles,
+            power=args.lr_power,
+        )
 
     # ----------------------------------------------------------------------
     # Resume from checkpoint (if any)
