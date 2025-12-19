@@ -163,7 +163,7 @@ class UnpairedDataset(torch.utils.data.Dataset):
         self.fixed_captions = []
         self.input_ids = []
         for cls in classes:
-            with open(os.path.join(dataset_folder, f"fixed_prompt_{cls}.txt"), "r") as f:
+            with open(os.path.join(dataset_folder, f"text_prompt_{cls}.txt"), "r") as f:
                 fixed_caption_cls = f.read().strip()
                 self.fixed_captions.append(fixed_caption_cls)
 
