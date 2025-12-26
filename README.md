@@ -24,7 +24,7 @@ Beyond robust cross-domain generalization, StainExpert offers a transformative p
 
 
 ## 🗄️ Enviroments
-1. Install `torch>=2.1.0`.
+1. Install `torch>=2.1.0`. 
 2. Install other packages following `requirements.txt`.
 
 
