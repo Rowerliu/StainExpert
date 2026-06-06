@@ -67,6 +67,7 @@ Beyond robust cross-domain generalization, StainExpert offers a transformative p
             MAS_text_prompt.txt
             ... 
     ```
+Dataset is provided for image and text prompt reference of ANHIR-kidney. 
 
 ### 2. Prepare the asset file
 
